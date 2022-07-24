@@ -1,0 +1,20 @@
+{
+  "name": "bryanwilhite.github.io",
+  "version": "1.0.0",
+  "description": "the conventional GitHub Pages repo",
+  "scripts": {
+    "pandoc": "pandoc -s README.md -o index.html --metadata title=\"bryanwilhite.github.io\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BryanWilhite/BryanWilhite.github.io.git"
+  },
+  "keywords": [
+    "git",
+    "GitHub",
+    "Pages"
+  ],
+  "author": "Bryan Wilhite",
+  "license": "ISC",
+  "homepage": "https://github.com/BryanWilhite/BryanWilhite.github.io#readme"
+}
