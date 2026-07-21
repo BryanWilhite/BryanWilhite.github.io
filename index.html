@@ -37,7 +37,7 @@
                     const width = chartContainer.clientWidth;
                     const xTickRotate = width >= 1024 ? 0 : -45;
                     const chart = Plot.plot({
-                        title: 'years of experience',
+                        title: '📊',
                         width,
                         marginBottom: 80,
                         y: { grid: true },
@@ -90,7 +90,7 @@
 
     <body>
         <main>
-            <section class="intro section container is-max-desktop pb-0">
+            <section class="intro section container is-max-widescreen pb-0">
                 <h1 class="is-size-1">Bryan Wilhite 😐🔨🍱</h1>
                 <h2 class="is-size-5 mb-4">let’s build data-driven interactive experiences, distributed globally, to help people get <em>their</em> work done</h2>
                 <p>
@@ -102,8 +102,22 @@
                 </p>
                 <p>The Observable Plot chart, “years of experience,” shown below is a convenient visualization of my journey. Optionally, you can <a href="https://observablehq.com/d/932c230139b8552e">view the Observable notebook behind this chart</a>.</p>
             </section>
-            <section class="years-of-experience section container">
+            <section class="years-of-experience section container is-max-widescreen">
+                <h2 class="is-size-2">years of experience</h2>
                 <div id="years-of-experience-chart"></div>
+            </section>
+            <section class="years-online section container is-max-widescreen">
+                <h2 class="is-size-2">years of learning and sharing online</h2>
+                <p>Here is a list of online locations where my lifelong study and outreach have taken place:</p>
+                <ul class="content">
+                    <li><a href="https://www.linkedin.com/in/wilhite">LinkedIn</a> (contact me here to request a copy of my résumé 📜)</li>
+                    <li><a href="https://github.com/BryanWilhite/">GitHub</a></li>
+                    <li><a href="https://songhayblog.azurewebsites.net/">day path</a> (my technical Blog where I report on my work at least once a month)</li>
+                    <li><a href="https://songhaysystem.com/">SonghaySystem.com</a> (my company website)</li>
+                    <li><a href="http://stackoverflow.com/users/22944/rasx">Stack Overflow</a></li>
+                    <li><a href="https://codepen.io/your-work?item_type=COLLECTION">my CodePen Collections</a></li>
+                    <li><a href="https://stackblitz.com/@BryanWilhite">StackBlitz</a></li>
+                </ul>
             </section>
         </main>
         <footer class="footer">

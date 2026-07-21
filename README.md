@@ -1,9 +1,7 @@
-# BryanWilhite.github.io
+# Bryan Wilhite 😐🔨🍱
 
-## the conventional [GitHub Pages](https://pages.github.com/) repo 📜
+## let’s build data-driven interactive experiences, distributed globally, to help people get their work done
 
-Hello, this is Bryan Wilhite from the [Songhay System](http://songhaysystem.com/).
+This is [GitHub Pages](https://docs.github.com/en/pages) repo for: <https://bryanwilhite.github.io/>
 
-This HTML page is generated from the conventional, `README.md` file via `pandoc` [[🔗](https://pandoc.org/)] which is installed locally. The `pandoc` command is preserved as an NPM script in the `package.json` [file](./package.json) of this repo. I find this minimalism refreshing 🐇🕳
-
-@[BryanWilhite](https://twitter.com/BryanWilhite)
+[Bryan Wilhite is on LinkedIn](https://www.linkedin.com/in/wilhite)🇺🇸💼
