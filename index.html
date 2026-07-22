@@ -6,33 +6,68 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/1.0.4/css/bulma.min.css" integrity="sha512-yh2RE0wZCVZeysGiqTwDTO/dKelCbS9bP2L94UvOFtl/FKXcNAje3Y2oBg/ZMZ3LS1sicYk4dYVGtDex75fvvA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/combine/npm/bulma@1.0.4/css/bulma.min.css,npm/gridjs@6.2.0/dist/theme/mermaid.min.css" />
 
-        <script src="https://cdn.jsdelivr.net/combine/npm/d3@7,npm/@observablehq/plot@0.6"></script>
+        <script src="https://cdn.jsdelivr.net/combine/npm/d3@7.9.0/dist/d3.min.js,npm/@observablehq/plot@0.6.17/dist/plot.umd.min.js,npm/gridjs@6.2.0/dist/gridjs.production.min.js"></script>
         <script type="text/javascript" defer>
-            class ObservableHqClient {
+            class IndexClient {
                 static yearsOfExperience = [];
+                static yearsOfSkillsData = [];
+                static yearsOfSkillsHeaders = [];
 
                 static fetchYearsOfExperience() {
                     d3
                         .csv('./data/years-of-experience.csv')
                         .then(data => {
-                            ObservableHqClient.yearsOfExperience = data.map(row => {
+                            IndexClient.yearsOfExperience = data.map(row => {
                                 row.years = (new Date(row['end']) - new Date(row['start'])) / 31556952000;
 
                                 return row;
                             });
 
-                            document.getElementById('rx-beginning-year').textContent = new Date(ObservableHqClient.yearsOfExperience[0].start).getFullYear();
-                            document.getElementById('rx-company-count').textContent = ObservableHqClient.yearsOfExperience.length;
+                            document.getElementById('rx-beginning-year').textContent = new Date(IndexClient.yearsOfExperience[0].start).getFullYear();
+                            document.getElementById('rx-company-count').textContent = IndexClient.yearsOfExperience.length;
 
-                            ObservableHqClient.renderYearsOfExperienceChart();
+                            IndexClient.renderYearsOfExperienceChart();
                         })
-                        .catch(error => console.error('ObservableHqClient network error:', error));
+                        .catch(error => console.error('IndexClient network error:', error));
+                }
+
+                static fetchYearsOfSkills() {
+                    d3
+                        .csv('./data/years-of-skills.csv')
+                        .then(data => {
+                            IndexClient.yearsOfSkillsData = data.map(row => {
+
+                                const valuesOnly = Object.entries(row).map(([k, v]) => v);
+
+                                const totalYears = +valuesOnly
+                                    .map(v => {
+                                        const n = Number.parseFloat(v);
+
+                                        return Number.isFinite(n) ? n : 0;
+                                    })
+                                    .reduce((a, i) => a + i)
+                                    .toFixed(2);
+
+                                if (IndexClient.yearsOfSkillsHeaders.length === 0) {
+                                    IndexClient.yearsOfSkillsHeaders = Object.keys(row);
+                                    IndexClient.yearsOfSkillsHeaders.splice(1, 0, 'Total Years');
+                                }
+
+                                valuesOnly.splice(1, 0, totalYears);
+
+                                return valuesOnly;
+                            });
+
+                            IndexClient.renderYearsOfSkillsTable();
+                        })
+                        .catch(error => console.error('IndexClient network error:', error));
+
                 }
 
                 static renderYearsOfExperienceChart() {
-                    const bryanW2Data = ObservableHqClient.yearsOfExperience;
+                    const bryanW2Data = IndexClient.yearsOfExperience;
                     const chartContainer = document.getElementById('years-of-experience-chart');
                     const width = chartContainer.clientWidth;
                     const xTickRotate = width >= 1024 ? 0 : -45;
@@ -77,18 +112,133 @@
 
                     chartContainer.appendChild(chart);
                 }
+
+                static renderYearsOfSkillsTable() {
+                    new gridjs.Grid({
+                        data: IndexClient.yearsOfSkillsData,
+                        columns: IndexClient.yearsOfSkillsHeaders,
+                        resizable: true,
+                        autoWidth: false,
+                        height: '24rem',
+                        search: true
+                    })
+                        .render(document.getElementById('years-of-building-table'));
+                }
             }
 
             window.addEventListener('DOMContentLoaded', () => {
-                ObservableHqClient.fetchYearsOfExperience();
+                IndexClient.fetchYearsOfExperience();
+                IndexClient.fetchYearsOfSkills();
             });
 
         </script>
+        <style>
+            .gridjs-thead {
+                position: sticky;
+                top: 0;
+                z-index: 3;
+            }
+
+            .gridjs-th {
+                width: max-content;
+            }
+
+            .gridjs-th:first-child {
+                width: 12rem;
+            }
+
+            .gridjs-td:first-child,
+            .gridjs-th:first-child {
+                position: sticky;
+                left: 0;
+                z-index: 2;
+            }
+
+            /* Base container backgrounds and texts */
+            .gridjs-container {
+                background-color: var(--bulma-body-background-color) !important;
+                color: var(--bulma-label-color) !important;
+            }
+
+            /* Header and Wrapper elements */
+            .gridjs-wrapper {
+                background-color: var(--bulma-skeleton-background) !important;
+                border: 1px solid #4a5568 !important;
+            }
+
+            .gridjs-th {
+                background-color: var(--bulma-skeleton-background) !important;
+                border: 1px solid #4a5568 !important;
+                color: yellow !important;
+            }
+
+            /* Table body data cells */
+            .gridjs-td {
+                background-color: var(--bulma-skeleton-background) !important;
+                border: 1px solid #4a5568 !important;
+            }
+
+            /* Row hover effect */
+            tr.gridjs-tr:hover td {
+                background-color: var(--bulma-body-color) !important;
+                color: var(--bulma-skeleton-background) !important;
+            }
+
+            /* Footer and Pagination controls */
+            .gridjs-footer, .gridjs-pagination, .gridjs-pages > button {
+                background-color: var(--bulma-skeleton-background) !important;
+                color: var(--bulma-label-color) !important;
+            }
+
+            .gridjs-footer {
+                border: 1px solid #4a5568 !important;
+            }
+
+            .gridjs-search-input {
+                background-color: var(--bulma-skeleton-background) !important;
+                color: var(--bulma-label-color) !important;
+                border: 1px solid #4a5568 !important;
+            }
+
+            button.gridjs-sort {
+                filter: invert(1);
+            }
+        </style>
 
         <title>Bryan Wilhite 😐</title>
     </head>
 
     <body>
+        <svg style="display:none;">
+            <symbol viewBox="0 0 24 24" id="pg_linkedin_24px">
+                <!-- https://pictogrammers.com/library/mdi/icon/linkedin/ -->
+                <path d="M19 3A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H19M18.5 18.5V13.2A3.26 3.26 0 0 0 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17A1.4 1.4 0 0 1 15.71 13.57V18.5H18.5M6.88 8.56A1.68 1.68 0 0 0 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19A1.69 1.69 0 0 0 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56M8.27 18.5V10.13H5.5V18.5H8.27Z" />
+            </symbol>
+            <symbol viewBox="0 0 24 24" id="pg_node_24px">
+                <!-- https://pictogrammers.com/library/mdi/icon/nodejs/ -->
+                <path d="M12,1.85C11.73,1.85 11.45,1.92 11.22,2.05L3.78,6.35C3.3,6.63 3,7.15 3,7.71V16.29C3,16.85 3.3,17.37 3.78,17.65L5.73,18.77C6.68,19.23 7,19.24 7.44,19.24C8.84,19.24 9.65,18.39 9.65,16.91V8.44C9.65,8.32 9.55,8.22 9.43,8.22H8.5C8.37,8.22 8.27,8.32 8.27,8.44V16.91C8.27,17.57 7.59,18.22 6.5,17.67L4.45,16.5C4.38,16.45 4.34,16.37 4.34,16.29V7.71C4.34,7.62 4.38,7.54 4.45,7.5L11.89,3.21C11.95,3.17 12.05,3.17 12.11,3.21L19.55,7.5C19.62,7.54 19.66,7.62 19.66,7.71V16.29C19.66,16.37 19.62,16.45 19.55,16.5L12.11,20.79C12.05,20.83 11.95,20.83 11.88,20.79L10,19.65C9.92,19.62 9.84,19.61 9.79,19.64C9.26,19.94 9.16,20 8.67,20.15C8.55,20.19 8.36,20.26 8.74,20.47L11.22,21.94C11.46,22.08 11.72,22.15 12,22.15C12.28,22.15 12.54,22.08 12.78,21.94L20.22,17.65C20.7,17.37 21,16.85 21,16.29V7.71C21,7.15 20.7,6.63 20.22,6.35L12.78,2.05C12.55,1.92 12.28,1.85 12,1.85M14,8C11.88,8 10.61,8.89 10.61,10.39C10.61,12 11.87,12.47 13.91,12.67C16.34,12.91 16.53,13.27 16.53,13.75C16.53,14.58 15.86,14.93 14.3,14.93C12.32,14.93 11.9,14.44 11.75,13.46C11.73,13.36 11.64,13.28 11.53,13.28H10.57C10.45,13.28 10.36,13.37 10.36,13.5C10.36,14.74 11.04,16.24 14.3,16.24C16.65,16.24 18,15.31 18,13.69C18,12.08 16.92,11.66 14.63,11.35C12.32,11.05 12.09,10.89 12.09,10.35C12.09,9.9 12.29,9.3 14,9.3C15.5,9.3 16.09,9.63 16.32,10.66C16.34,10.76 16.43,10.83 16.53,10.83H17.5C17.55,10.83 17.61,10.81 17.65,10.76C17.69,10.72 17.72,10.66 17.7,10.6C17.56,8.82 16.38,8 14,8Z" />
+            </symbol>
+            <symbol viewBox="0 0 24 24" id="pg_github_24px">
+                <!-- https://pictogrammers.com/library/mdi/icon/github/ -->
+                <path d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" />
+            </symbol>
+            <symbol viewBox="0 0 24 24" id="pg_so_24px">
+                <!-- https://pictogrammers.com/library/mdi/icon/stack-overflow/ -->
+                <path d="M17.36,20.2V14.82H19.15V22H3V14.82H4.8V20.2H17.36M6.77,14.32L7.14,12.56L15.93,14.41L15.56,16.17L6.77,14.32M7.93,10.11L8.69,8.5L16.83,12.28L16.07,13.9L7.93,10.11M10.19,6.12L11.34,4.74L18.24,10.5L17.09,11.87L10.19,6.12M14.64,1.87L20,9.08L18.56,10.15L13.2,2.94L14.64,1.87M6.59,18.41V16.61H15.57V18.41H6.59Z" />
+            </symbol>
+            <symbol viewBox="0 0 24 24" id="pg_codepen_24px">
+                <!-- https://pictogrammers.com/library/mdi/icon/codepen/ -->
+                <path d="M8.21 12L6.88 12.89V11.11L8.21 12M11.47 9.82V7.34L7.31 10.12L9.16 11.36L11.47 9.82M16.7 10.12L12.53 7.34V9.82L14.84 11.36L16.7 10.12M7.31 13.88L11.47 16.66V14.18L9.16 12.64L7.31 13.88M12.53 14.18V16.66L16.7 13.88L14.84 12.64L12.53 14.18M12 10.74L10.12 12L12 13.26L13.88 12L12 10.74M22 12C22 17.5 17.5 22 12 22C6.5 22 2 17.5 2 12C2 6.5 6.5 2 12 2C17.5 2 22 6.5 22 12M18.18 10.12C18.18 10.09 18.18 10.07 18.18 10.05L18.17 10L18.17 10L18.16 9.95C18.15 9.94 18.15 9.93 18.14 9.91L18.13 9.89L18.11 9.85L18.1 9.83L18.08 9.8L18.06 9.77L18.03 9.74L18 9.72L18 9.7L17.96 9.68L17.95 9.67L12.3 5.91C12.12 5.79 11.89 5.79 11.71 5.91L6.05 9.67L6.05 9.68L6 9.7C6 9.71 6 9.72 6 9.72L5.97 9.74L5.94 9.77L5.93 9.8L5.9 9.83L5.89 9.85L5.87 9.89L5.86 9.91L5.84 9.95L5.84 10L5.83 10L5.82 10.05C5.82 10.07 5.82 10.09 5.82 10.12V13.88C5.82 13.91 5.82 13.93 5.82 13.95L5.83 14L5.84 14L5.84 14.05C5.85 14.06 5.85 14.07 5.86 14.09L5.87 14.11L5.89 14.15L5.9 14.17L5.92 14.2L5.94 14.23C5.95 14.24 5.96 14.25 5.97 14.26L6 14.28L6 14.3L6.04 14.32L6.05 14.33L11.71 18.1C11.79 18.16 11.9 18.18 12 18.18C12.1 18.18 12.21 18.15 12.3 18.1L17.95 14.33L17.96 14.32L18 14.3L18 14.28L18.03 14.26L18.06 14.23L18.08 14.2L18.1 14.17L18.11 14.15L18.13 14.11L18.14 14.09L18.16 14.05L18.16 14L18.17 14L18.18 13.95C18.18 13.93 18.18 13.91 18.18 13.88V10.12M17.12 12.89V11.11L15.79 12L17.12 12.89Z" />
+            </symbol>
+            <symbol viewBox="0 0 24 24" id="pg_stackblitz_24px">
+                <!-- https://pictogrammers.com/library/mdi/icon/lightning-bolt/ -->
+                <path d="M11 15H6L13 1V9H18L11 23V15Z" />
+            </symbol>
+            <symbol viewBox="0 0 24 24" id="pg_homegrown_24px">
+                <!-- https://pictogrammers.com/library/mdi/icon/sprout/ -->
+                <path d="M2,22V20C2,20 7,18 12,18C17,18 22,20 22,20V22H2M11.3,9.1C10.1,5.2 4,6.1 4,6.1C4,6.1 4.2,13.9 9.9,12.7C9.5,9.8 8,9 8,9C10.8,9 11,12.4 11,12.4V17C11.3,17 11.7,17 12,17C12.3,17 12.7,17 13,17V12.8C13,12.8 13,8.9 16,7.9C16,7.9 14,10.9 14,12.9C21,13.6 21,4 21,4C21,4 12.1,3 11.3,9.1Z" />
+            </symbol>
+        </svg>
         <main>
             <section class="intro section container is-max-widescreen pb-0">
                 <h1 class="is-size-1">Bryan Wilhite 😐🔨🍱</h1>
@@ -106,17 +256,79 @@
                 <h2 class="is-size-2">years of experience</h2>
                 <div id="years-of-experience-chart"></div>
             </section>
+            <section class="years-of-building section container is-max-widescreen">
+                <h2 class="is-size-2">years of skill building</h2>
+                <p>The table below is a selection of my skills broken down in résumé 📜 time. Scrolling down the rows of the table takes us back in time as skills appear and develop. Scrolling horizontally takes us forward through the organizations I’ve met over time. Feel free to type a keyword to filter the table down by skill name:</p>
+                <div id="years-of-building-table"></div>
+            </section>
             <section class="years-online section container is-max-widescreen">
                 <h2 class="is-size-2">years of learning and sharing online</h2>
                 <p>Here is a list of online locations where my lifelong study and outreach have taken place:</p>
                 <ul class="mt-4">
-                    <li><a href="https://www.linkedin.com/in/wilhite">LinkedIn</a> (contact me here to request a copy of my résumé 📜)</li>
-                    <li><a href="https://github.com/BryanWilhite/">GitHub</a></li>
-                    <li><a href="https://songhayblog.azurewebsites.net/">day path</a> (my technical Blog where I report on my work at least once a month)</li>
-                    <li><a href="https://songhaysystem.com/">SonghaySystem.com</a> (my company website)</li>
-                    <li><a href="http://stackoverflow.com/users/22944/rasx">Stack Overflow</a></li>
-                    <li><a href="https://codepen.io/your-work?item_type=COLLECTION">my CodePen Collections</a></li>
-                    <li><a href="https://stackblitz.com/@BryanWilhite">StackBlitz</a></li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_linkedin_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="https://www.linkedin.com/in/wilhite">LinkedIn</a> (contact me here to request a copy of my résumé 📜)
+                    </li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_node_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="https://rasx-node-js.netlify.app/">my Node.js-based (or `npm`-based) research</a> (my self-educational Netlify site)
+                    </li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_github_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="https://github.com/BryanWilhite/">GitHub</a>
+                    </li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_homegrown_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="https://songhayblog.azurewebsites.net/">day path</a> (my technical Blog where I report on my work at least once a month)
+                    </li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_homegrown_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="https://songhaysystem.com/">SonghaySystem.com</a> (my company website)
+                    </li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_so_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="http://stackoverflow.com/users/22944/rasx">Stack Overflow</a>
+                    </li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_codepen_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="https://codepen.io/your-work?item_type=COLLECTION">my CodePen Collections</a>
+                    </li>
+                    <li class="is-flex is-flex-direction-row mb-2">
+                        <span ariahidden="true" class="icon">
+                            <svg fill="currentColor">
+                                <use xlink:href="#pg_stackblitz_24px"></use>
+                            </svg>
+                        </span>
+                        <a href="https://stackblitz.com/@BryanWilhite">StackBlitz</a>
+                    </li>
                 </ul>
             </section>
         </main>
