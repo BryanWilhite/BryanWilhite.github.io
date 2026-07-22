@@ -28,7 +28,7 @@
                             document.getElementById('rx-beginning-year').textContent = new Date(IndexClient.yearsOfExperience[0].start).getFullYear();
                             document.getElementById('rx-company-count').textContent = IndexClient.yearsOfExperience.length;
 
-                            IndexClient.renderYearsOfExperienceChart();
+                            IndexClient.plotYearsOfExperienceChart();
                         })
                         .catch(error => console.error('IndexClient network error:', error));
                 }
@@ -66,7 +66,7 @@
 
                 }
 
-                static renderYearsOfExperienceChart() {
+                static plotYearsOfExperienceChart() {
                     const bryanW2Data = IndexClient.yearsOfExperience;
                     const chartContainer = document.getElementById('years-of-experience-chart');
                     const width = chartContainer.clientWidth;
@@ -122,7 +122,7 @@
                         height: '24rem',
                         search: true
                     })
-                        .render(document.getElementById('years-of-building-table'));
+                    .render(document.getElementById('years-of-building-table'));
                 }
             }
 
@@ -253,16 +253,17 @@
                 <p>The Observable Plot chart, “years of experience,” shown below is a convenient visualization of my journey. Optionally, you can <a href="https://observablehq.com/d/932c230139b8552e">view the Observable notebook behind this chart</a>.</p>
             </section>
             <section class="years-of-experience section container is-max-widescreen">
-                <h2 class="is-size-2">years of experience</h2>
+                <h2 id="experience" class="is-size-2">years of experience</h2>
                 <div id="years-of-experience-chart"></div>
             </section>
             <section class="years-of-building section container is-max-widescreen">
-                <h2 class="is-size-2">years of skill building</h2>
-                <p>The table below is a selection of my skills broken down in résumé 📜 time. Scrolling down the rows of the table takes us back in time as skills appear and develop. Scrolling horizontally takes us forward through the organizations I’ve met over time. Feel free to type a keyword to filter the table down by skill name:</p>
+                <h2 id="skills" class="is-size-2">years of skill building</h2>
+                <p>The table below is a selection of my skills broken down in résumé 📜 time. Scrolling down the rows of the table takes us back in time as skills appear and develop. Scrolling horizontally takes us forward through the organizations I’ve met over time. For example, it may look like my .NET experience is only about five years old but, as you scroll down you will see that my .NET <em>Framework</em> experience adds almost 20 years of experience. It can be a misunderstanding in the unmaking🙂</p>
+                <p class="mt-1">Also, you can type a keyword to filter the table down by skill name:</p>
                 <div id="years-of-building-table"></div>
             </section>
             <section class="years-online section container is-max-widescreen">
-                <h2 class="is-size-2">years of learning and sharing online</h2>
+                <h2 id="online" class="is-size-2">years of learning and sharing online</h2>
                 <p>Here is a list of online locations where my lifelong study and outreach have taken place:</p>
                 <ul class="mt-4">
                     <li class="is-flex is-flex-direction-row mb-2">
@@ -330,6 +331,73 @@
                         <a href="https://stackblitz.com/@BryanWilhite">StackBlitz</a>
                     </li>
                 </ul>
+            </section>
+            <section class="acknowledgments section container is-max-widescreen">
+                <h2 id="acknowledgments" class="is-size-2">acknowledgments</h2>
+                <p>There are so many more people to recognize for my professional (and personal) development than the incredible names listed below:</p>
+                <div class="fixed-grid has-12-cols mt-4">
+                    <div class="grid">
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/bryan-barnes-3497438/">Bryan Barnes</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for being a true mentor and role model!</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/natt-m-0061941/">Natt McClain</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for her guidance and insight, getting me started in this business.</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/csells/">Chris Sells</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for honoring me quite early in my career, suggesting that I become one of many reviewers of his excellent WPF <a href="https://www.amazon.com/stores/Chris-Sells/author/B001H6OL1K?ref=sr_ntt_srch_lnk_2&qid=1784744328&sr=8-2&shoppingPortalEnabled=true&ccs_id=0a13406f-bba3-4453-bc6e-c347253c3935">books</a>.</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/jtableiou/">Julio Urquidi</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for being the real, artistic human being available for my newbie questions about Linux, he was there to help long before search engines became popular!</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/ruz2nen5bppr/">William Cinnater</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for setting the example of how DevOps should be done, long before the term “DevOps” was coined!</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/giasonline/">Gia S</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for being the first to show me the importance of <acronym title="User Experience">UX</acronym>. Gia set a standard that few have met in my career, inspiring me to make XAML pixel perfect with respect to her PDF-based specifications.</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/damoncarr/">Damon Wilder Carr</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for being helpful and sincere even while <a href="https://en.wikipedia.org/wiki/Bill_H._Gross">Bill Gross</a> was being fired! Damon opened up a whole new WPF world for me here in Southern California.</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/johnrobert-wilson/">JohnRobert Wilson</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for being the <em>first</em> to patiently show me how <acronym title="User Experience">UX</acronym> works with software developers and business stakeholders in the real world.</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/jbpdev/">Kelwadis Butler</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for effortlessly breaking down the barrier between developer and <acronym title="User Experience">UX</acronym> with excellent communication and digitized draftsmanship.</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/jbpdev/">Jordan Parker</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for his accessible professionalism, openness and honesty as an overworked architect!</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4" href="https://www.linkedin.com/in/shahrukhzahir/">Shahrukh Zahir</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for his meticulous researching insights that adeptly match a candidate with a client!</div>
+
+                        <div class="cell is-col-span-3">
+                            <a class="is-size-4 is-col-span-11" href="https://www.linkedin.com/in/jacob-bredthauer-7458b737/">Jacob Bredthauer</a>
+                        </div>
+                        <div class="cell is-col-span-9 pt-1">for his world-class managerial talents, reminding most of us what a <em>manager</em> really can be—memorizing the rules of disparate systems is his <em>hobby</em> as an analog board gamer!</div>
+                    </div>
+                </div>
             </section>
         </main>
         <footer class="footer">
